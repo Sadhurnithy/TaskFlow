@@ -202,7 +202,7 @@ export function CreateTaskForm({ workspaceId, onSuccess, open, onOpenChange, tri
                                 name="dueDate"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <Popover>
+                                        <Popover modal={true}>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
                                                     <Button
@@ -247,7 +247,7 @@ export function CreateTaskForm({ workspaceId, onSuccess, open, onOpenChange, tri
                             name="noteIds"
                             render={({ field }) => (
                                 <FormItem>
-                                    <Popover>
+                                    <Popover modal={true}>
                                         <PopoverTrigger asChild>
                                             <FormControl>
                                                 <Button
@@ -285,7 +285,7 @@ export function CreateTaskForm({ workspaceId, onSuccess, open, onOpenChange, tri
                                                 </Button>
                                             </FormControl>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-[400px] p-0 bg-popover/95 backdrop-blur-xl border-border/50 shadow-xl z-[100]" align="start">
+                                        <PopoverContent className="w-[300px] sm:w-[400px] p-0 bg-popover/95 backdrop-blur-xl border-border/50 shadow-xl z-[100]" align="start">
                                             <Command>
                                                 <CommandInput placeholder="Search notes..." />
                                                 <CommandList>

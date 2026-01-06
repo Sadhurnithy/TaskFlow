@@ -14,9 +14,10 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
+
 import { UserMenu } from "@/components/shared/user-menu"
 import { WorkspaceSwitcher } from "./workspace-switcher"
+import { MobileSidebar } from "./mobile-sidebar"
 import { getUserWorkspaces } from "@/lib/db/queries/workspaces"
 import { getInboxCount } from "@/lib/db/queries/inbox"
 import { SidebarNav } from "./sidebar-nav"
@@ -89,17 +90,9 @@ export async function WorkspaceSidebar({ user, activeSlug }: WorkspaceSidebarPro
 
             {/* Mobile Sidebar (Sheet) */}
             <div className="md:hidden fixed top-4 left-4 z-40">
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <Button variant="outline" size="icon" className="bg-background/80 backdrop-blur-md border border-border/50">
-                            <Menu className="h-4 w-4" />
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="p-0 w-[280px]">
-                        <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                        <SidebarContent />
-                    </SheetContent>
-                </Sheet>
+                <MobileSidebar>
+                    <SidebarContent />
+                </MobileSidebar>
             </div>
         </>
     )

@@ -42,9 +42,7 @@ export function DangerZone({ workspace }: DangerZoneProps) {
             // The action returns { success: true } OR redirects.
             // The action redirects on success.
             await deleteWorkspace(workspace.id)
-            // If it redirects, this might not execute further, but if it returns due to error:
-            // Actually my action implementation redirects blindly. 
-            // So we just assume it works or catches.
+            router.push('/dashboard')
         } catch (error) {
             toast.error("Failed to delete workspace")
         } finally {
