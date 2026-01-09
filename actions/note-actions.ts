@@ -85,7 +85,8 @@ export async function updateNote(noteId: string, data: UpdateNoteInput): Promise
     if (role === "GUEST") return { success: false, error: "Guests cannot edit notes" }
 
     try {
-        // console.log(`[updateNote] Payload size roughly: ${JSON.stringify(data.content).length} bytes`)
+        // Sanitize content to ensure it's a plain object (removes Next.js proxies)
+        const safeContent = data.content ? JSON.parse(JSON.stringify(data.content)) : data.content
 
         // Version History Logic
         const lastVersion = await prisma.noteVersion.findFirst({
@@ -107,13 +108,13 @@ export async function updateNote(noteId: string, data: UpdateNoteInput): Promise
         }
 
         // Check for removed images (Cleanup)
-        if (note.content && data.content) {
+        if (note.content && safeContent) {
             // console.log(`[UpdateNote] Updating note ${noteId}`)
-            const debugFiles = getCloudinaryFiles(data.content)
+            const debugFiles = getCloudinaryFiles(safeContent)
             // console.log(`[UpdateNote] Found ${debugFiles.size} files in new content:`, Array.from(debugFiles.keys()))
 
             const oldFiles = getCloudinaryFiles(note.content)
-            const newFiles = getCloudinaryFiles(data.content)
+            const newFiles = getCloudinaryFiles(safeContent)
 
             const removedItems: { publicId: string, resourceType: string }[] = []
 
@@ -133,7 +134,7 @@ export async function updateNote(noteId: string, data: UpdateNoteInput): Promise
             where: { id: noteId },
             data: {
                 title: data.title,
-                content: data.content ?? undefined, // Only update if provided
+                content: safeContent ?? undefined, // Only update if provided
                 coverImage: data.coverImage,
                 icon: data.icon,
                 isPublic: data.isPublic,
