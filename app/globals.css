@@ -120,7 +120,7 @@
 
 .ProseMirror blockquote {
   border-left-width: 4px;
-  border-left-color: hsl(var(--primary));
+  /* border-left-color is handled by inline styles for dynamic colors */
   background: hsl(var(--muted)/0.3);
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;

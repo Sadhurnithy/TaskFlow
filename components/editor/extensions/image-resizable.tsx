@@ -190,7 +190,18 @@ function ResizableImageComponent({ node, updateAttributes, deleteNode, selected 
                 <img
                     src={src}
                     alt="Content"
-                    className="w-full h-auto rounded-lg shadow-sm"
+                    className={cn(
+                        "w-full h-auto rounded-lg shadow-sm",
+                        !src && "min-h-[200px] bg-muted animate-pulse"
+                    )}
+                    onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        // Basic fallback text
+                        const span = document.createElement('span');
+                        span.className = "block p-4 text-sm text-muted-foreground bg-muted rounded border border-dashed text-center";
+                        span.innerText = "❌ Image failed to load. Please re-upload.";
+                        e.currentTarget.parentElement?.appendChild(span);
+                    }}
                 />
 
                 {/* Overlay Controls (visible on hover or select) */}

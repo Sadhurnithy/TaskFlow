@@ -88,6 +88,9 @@ export async function updateNote(noteId: string, data: UpdateNoteInput): Promise
         // Sanitize content to ensure it's a plain object (removes Next.js proxies)
         const safeContent = data.content ? JSON.parse(JSON.stringify(data.content)) : data.content
 
+        console.log(`[updateNote] Payload size roughly: ${JSON.stringify(safeContent).length} bytes`)
+        // console.log("Payload sample:", JSON.stringify(safeContent).slice(0, 200))
+
         // Version History Logic
         const lastVersion = await prisma.noteVersion.findFirst({
             where: { noteId },
