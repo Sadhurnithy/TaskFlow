@@ -147,7 +147,8 @@ export async function updateNote(noteId: string, data: UpdateNoteInput): Promise
         return { success: true, data: updatedNote }
     } catch (e) {
         console.error("[updateNote] Error:", e)
-        return { success: false, error: "Failed to update note" }
+        const errorMessage = e instanceof Error ? e.message : "Unknown error"
+        return { success: false, error: `Failed to update note: ${errorMessage}` }
     }
 }
 
