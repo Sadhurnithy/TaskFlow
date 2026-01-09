@@ -84,6 +84,8 @@ const getSuggestionItems = ({ query }: { query: string }) => {
                 input.onchange = async () => {
                     if (input.files?.length) {
                         const file = input.files[0]
+                        if (!file) return
+
                         // Import directly here or rely on global? 
                         // For now, let's use the same upload logic if possible or just simplified
                         // Since we can't easily import uploadToCloudinary here due to client boundaries sometimes
