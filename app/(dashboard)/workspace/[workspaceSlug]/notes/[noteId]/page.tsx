@@ -60,12 +60,12 @@ export default async function NotePage({
     // Server Action wrapper for saving
     async function saveContent(content: any) {
         "use server"
-        if (!canEdit) return
-        await updateNote(noteId, { content })
+        if (!canEdit) return { success: false, error: "Unauthorized" }
+        return await updateNote(noteId, { content })
     }
 
     return (
-        <main className="min-h-[100dvh] w-full bg-background md:bg-muted/5 overflow-x-hidden">
+        <main className="min-h-[100dvh] w-full bg-background md:bg-muted/5">
             <div className="w-full md:max-w-[850px] md:mx-auto md:my-8 md:bg-background md:border md:rounded-xl md:shadow-sm">
                 <NotePageHeader
                     note={note}

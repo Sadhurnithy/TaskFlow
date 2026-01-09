@@ -75,6 +75,8 @@ export async function updateNote(noteId: string, data: UpdateNoteInput): Promise
     const session = await requireAuth()
     const userId = session.user?.id as string
 
+    // console.log(`[updateNote] Starting update for ${noteId} by ${userId}`)
+
     const note = await prisma.note.findUnique({ where: { id: noteId } })
     if (!note) return { success: false, error: "Note not found" }
 
@@ -83,8 +85,9 @@ export async function updateNote(noteId: string, data: UpdateNoteInput): Promise
     if (role === "GUEST") return { success: false, error: "Guests cannot edit notes" }
 
     try {
+        // console.log(`[updateNote] Payload size roughly: ${JSON.stringify(data.content).length} bytes`)
+
         // Version History Logic
-        // Check last version
         const lastVersion = await prisma.noteVersion.findFirst({
             where: { noteId },
             orderBy: { createdAt: "desc" }
@@ -105,9 +108,9 @@ export async function updateNote(noteId: string, data: UpdateNoteInput): Promise
 
         // Check for removed images (Cleanup)
         if (note.content && data.content) {
-            console.log(`[UpdateNote] Updating note ${noteId}`)
+            // console.log(`[UpdateNote] Updating note ${noteId}`)
             const debugFiles = getCloudinaryFiles(data.content)
-            console.log(`[UpdateNote] Found ${debugFiles.size} files in new content:`, Array.from(debugFiles.keys()))
+            // console.log(`[UpdateNote] Found ${debugFiles.size} files in new content:`, Array.from(debugFiles.keys()))
 
             const oldFiles = getCloudinaryFiles(note.content)
             const newFiles = getCloudinaryFiles(data.content)
@@ -130,7 +133,7 @@ export async function updateNote(noteId: string, data: UpdateNoteInput): Promise
             where: { id: noteId },
             data: {
                 title: data.title,
-                content: data.content,
+                content: data.content ?? undefined, // Only update if provided
                 coverImage: data.coverImage,
                 icon: data.icon,
                 isPublic: data.isPublic,
@@ -143,7 +146,7 @@ export async function updateNote(noteId: string, data: UpdateNoteInput): Promise
         revalidatePath(`/workspace/${note.workspaceId}/notes`)
         return { success: true, data: updatedNote }
     } catch (e) {
-        console.error(e)
+        console.error("[updateNote] Error:", e)
         return { success: false, error: "Failed to update note" }
     }
 }

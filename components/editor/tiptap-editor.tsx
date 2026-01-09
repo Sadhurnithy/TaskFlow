@@ -1,4 +1,4 @@
-"use client"
+import { toast } from "sonner"
 
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
@@ -36,7 +36,7 @@ interface TipTapEditorProps {
     initialContent?: any
     editable?: boolean
     noteId?: string
-    onChange?: (content: any) => void
+    onChange?: (content: any) => Promise<any>
     note?: any
     notes?: any[]
     workspaceId?: string
@@ -185,12 +185,37 @@ export default function TipTapEditor({
 
             saveTimeoutRef.current = setTimeout(async () => {
                 if (onChangeRef.current) {
-                    await onChangeRef.current(editor.getJSON())
-                    setIsSaving(false)
+                    try {
+                        const result = await onChangeRef.current(editor.getJSON())
+                        // Check if result is an object with success property (ActionResponse)
+                        if (result && typeof result === 'object' && 'success' in result && !result.success) {
+                            toast.error("Failed to save changes")
+                            console.error("Save failed:", result.error)
+                            // Keep isSaving true or set error state?
+                            // For now, let's just notify
+                        }
+                    } catch (error) {
+                        toast.error("Failed to save changes")
+                        console.error("Save error:", error)
+                    } finally {
+                        setIsSaving(false)
+                    }
                 }
-            }, 1000)
+            }, 500) // Reduced to 500ms for faster sync
         },
     })
+
+    // Warn user if they try to leave while saving
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (isSaving) {
+                e.preventDefault()
+                e.returnValue = ''
+            }
+        }
+        window.addEventListener('beforeunload', handleBeforeUnload)
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+    }, [isSaving])
 
     // Effect to update content if initialContent changes externally (e.g. reload)
     useEffect(() => {
