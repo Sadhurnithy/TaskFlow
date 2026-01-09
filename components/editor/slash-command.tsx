@@ -72,6 +72,34 @@ const getSuggestionItems = ({ query }: { query: string }) => {
             },
         },
         {
+            title: "Image",
+            description: "Upload an image",
+            icon: ImageIcon,
+            command: ({ editor, range }: any) => {
+                editor.chain().focus().deleteRange(range).run()
+                // Trigger file upload selector logically
+                const input = document.createElement('input')
+                input.type = 'file'
+                input.accept = 'image/*'
+                input.onchange = async () => {
+                    if (input.files?.length) {
+                        const file = input.files[0]
+                        // Import directly here or rely on global? 
+                        // For now, let's use the same upload logic if possible or just simplified
+                        // Since we can't easily import uploadToCloudinary here due to client boundaries sometimes
+                        // We will rely on a custom event or a simpler direct flow if needed.
+                        // Actually, slash-command is client side.
+                        const { uploadToCloudinary } = await import("@/lib/utils/upload") // dynamic import
+                        const url = await uploadToCloudinary(file)
+                        if (url) {
+                            editor.chain().focus().setImage({ src: url }).run()
+                        }
+                    }
+                }
+                input.click()
+            },
+        },
+        {
             title: "Callout",
             description: "Highlight information",
             icon: Info,

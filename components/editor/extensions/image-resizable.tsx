@@ -54,7 +54,7 @@ async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> 
 }
 
 export const ResizableImage = Node.create({
-    name: 'resizableImage',
+    name: 'image',
     group: 'block',
     content: 'inline*',
     draggable: true,
@@ -70,7 +70,10 @@ export const ResizableImage = Node.create({
     },
 
     parseHTML() {
-        return [{ tag: 'div[data-type="resizable-image"]' }]
+        return [
+            { tag: 'div[data-type="resizable-image"]' },
+            { tag: 'img' }, // Also parse standard img tags
+        ]
     },
 
     renderHTML({ HTMLAttributes }) {
