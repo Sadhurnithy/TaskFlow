@@ -1,3 +1,4 @@
+"use client"
 import { mergeAttributes, Node } from '@tiptap/core'
 import { ReactNodeViewRenderer, NodeViewWrapper } from '@tiptap/react'
 import React, { useState, useCallback, useRef } from 'react'
