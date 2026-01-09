@@ -64,9 +64,36 @@ export default function TipTapEditor({
         onChangeRef.current = onChange
     }, [onChange])
 
-    const editorContent = initialContent && initialContent.content && initialContent.content.length > 0
+    // Helper to migrate legacy content (e.g. resizableImage -> image)
+    const migrateContent = (content: any): any => {
+        if (!content || typeof content !== 'object') return content
+
+        // Handle array
+        if (Array.isArray(content)) {
+            return content.map(migrateContent)
+        }
+
+        // Handle object
+        const newContent = { ...content }
+
+        // Rename legacy node type
+        if (newContent.type === 'resizableImage') {
+            newContent.type = 'image'
+        }
+
+        // Recurse into children
+        if (newContent.content) {
+            newContent.content = migrateContent(newContent.content)
+        }
+
+        return newContent
+    }
+
+    const rawContent = initialContent && initialContent.content && initialContent.content.length > 0
         ? initialContent
         : { type: 'doc', content: [{ type: 'paragraph' }] }
+
+    const editorContent = migrateContent(rawContent)
 
     const editor = useEditor({
         immediatelyRender: false,
@@ -111,7 +138,9 @@ export default function TipTapEditor({
             SlashCommand,
             Attachment,
             TextStyle,
-            Color,
+            Color.configure({
+                types: ['textStyle'],
+            }),
         ],
         content: editorContent,
         editable,
@@ -119,6 +148,7 @@ export default function TipTapEditor({
             attributes: {
                 class: cn(
                     "prose md:prose-sm dark:prose-invert max-w-none w-full max-w-full focus:outline-none min-h-[500px] px-4 py-4 md:px-12 md:py-6 break-words",
+                    "bg-transparent",
                     "prose-headings:font-semibold prose-h1:text-3xl prose-h2:text-2xl",
                     "prose-img:rounded-md prose-img:shadow-sm"
                 ),

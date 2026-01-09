@@ -5,18 +5,18 @@ export const ColoredBlockquote = Blockquote.extend({
         return {
             color: {
                 default: null,
-                parseHTML: element => element.style.borderLeftColor || element.getAttribute('data-color'),
+                // Prioritize data-color, fallback to style
+                parseHTML: element => element.getAttribute('data-color') || element.style.borderLeftColor,
                 renderHTML: attributes => {
                     if (!attributes.color) {
                         return {}
                     }
                     return {
                         'data-color': attributes.color,
-                        style: `border-left-color: ${attributes.color}; border-left-width: 4px; padding-left: 1rem; color: ${attributes.color}`, // Also text color? Maybe just border. User said "colour picker to quotes too". Usually implies border color for quotes.
-                        // Let's set border color and maybe text color slightly tinted? Default to just border for now + text color if desired. 
-                        // Actually, usually quote color implies the vertical bar.
+                        style: `border-left-color: ${attributes.color}; border-left-width: 4px; padding-left: 1rem; color: inherit`,
                     }
                 },
+                keepOnSplit: false,
             },
         }
     },
