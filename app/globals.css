@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@plugin "tailwindcss-animate";
+
 
 @layer base {
   :root {
@@ -120,9 +120,11 @@
 
 .ProseMirror blockquote {
   border-left-width: 4px;
-  border-left-color: hsl(var(--border));
-  padding-left: 1rem !important;
-  font-style: italic !important;
+  border-left-color: hsl(var(--primary));
+  background: hsl(var(--muted)/0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-style: italic;
   margin-bottom: 1em !important;
 }
 

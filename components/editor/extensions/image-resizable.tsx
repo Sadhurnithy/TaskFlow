@@ -3,6 +3,8 @@ import { mergeAttributes, Node } from '@tiptap/core'
 import { ReactNodeViewRenderer, NodeViewWrapper } from '@tiptap/react'
 import React, { useState, useCallback, useRef } from 'react'
 import Cropper from 'react-easy-crop'
+import { toast } from "sonner"
+import { uploadToCloudinary } from "@/lib/utils/upload"
 import {
     Dialog,
     DialogContent,
@@ -94,11 +96,25 @@ function ResizableImageComponent({ node, updateAttributes, deleteNode, selected 
     const onCropSave = async () => {
         try {
             if (!node.attrs.src || !croppedAreaPixels) return
-            const croppedImage = await getCroppedImg(node.attrs.src, croppedAreaPixels)
-            updateAttributes({ src: croppedImage })
+            const croppedImageBlobUrl = await getCroppedImg(node.attrs.src, croppedAreaPixels) // Returns blob:url
+
+            // Upload to Cloudinary to make it permanent
+            toast.info("Saving cropped image...")
+            const response = await fetch(croppedImageBlobUrl)
+            const blob = await response.blob()
+            const file = new File([blob], "cropped-image.jpg", { type: "image/jpeg" })
+
+            const url = await uploadToCloudinary(file)
+            if (url) {
+                updateAttributes({ src: url })
+                toast.success("Image updated")
+            } else {
+                toast.error("Failed to upload cropped image")
+            }
             setIsCropOpen(false)
         } catch (e) {
             console.error(e)
+            toast.error("Error cropping image")
         }
     }
 
